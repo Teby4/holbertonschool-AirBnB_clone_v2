@@ -109,22 +109,33 @@ class HBNBCommand(cmd.Cmd):
         """ Prints the help documentation for EOF """
         print("Exits the program without formatting\n")
 
-    def emptyline(self):
+    def emptyline(self) -> None:
         """ Overrides the emptyline method of CMD """
         pass
 
     def do_create(self, args):
-        """ Create an object of any class"""
+        args_list = args.split()
         if not args:
             print("** class name missing **")
             return
-        elif args not in HBNBCommand.classes:
+        if args_list[0] not in self.classes:
             print("** class doesn't exist **")
             return
-        new_instance = HBNBCommand.classes[args]()
-        storage.save()
-        print(new_instance.id)
-        storage.save()
+        if args_list[0] in self.classes:
+            new = self.classes[args_list[0]]()
+            new.save()
+            print(new.id)
+        
+        attributes = {}
+        if len(args_list) > 1:
+            for i in args_list[1:]:
+                key, value = i.split("=")
+                attributes[key] = value
+                value = value.replace('\\"', '"').replace('_', ' ')
+
+        for key, value in attributes.items():
+            setattr(new, key, value)
+
 
     def help_create(self):
         """ Help information for the create method """
