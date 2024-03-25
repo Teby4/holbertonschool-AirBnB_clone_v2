@@ -116,40 +116,46 @@ class HBNBCommand(cmd.Cmd):
 
     def do_create(self, args):
         """ Function to allow for object creation with given parameters """
-        args_list = args.split()
-        
-        if len(args_list) < 2:
+        args = args.split()
+        if args[0]:
+            c_name = args[0]
+        else:
             print("** class name missing **")
             return
-        
-        class_name = args_list[1]
-        if class_name not in HBNBCommand.classes:
+        if c_name not in HBNBCommand.classes:
             print("** class doesn't exist **")
             return
-        
-        params = {}
-        for arg in args_list[2:]:
-            parts = arg.split("=")
-            if len(parts) != 2:
-                continue
-            key, value = parts
-            if value.startswith('"') and value.endswith('"'):
-                value = value.strip('"').replace('\\"', '"').replace('_', ' ')
-            elif '.' in value:
-                try:
-                    value = float(value)
-                except ValueError:
+        kwargs = {}
+        try:
+            for param in args[1:]:
+                param_split = param.split('=')
+                if len(param_split) != 2:
                     continue
-            else:
-                try:
-                    value = int(value)
-                except ValueError:
-                    continue
-            params[key] = value
-        
-        new_instance = HBNBCommand.classes[class_name](**params)
-        new_instance.save()
-        print(new_instance.id)
+                key, str_value = param_split
+
+                if str_value[0] == '"' and str_value[-1] == '"':
+                    str_value = str_value[1:-1]
+                    value = str_value.replace('_', ' ')
+                elif '.' in str_value:
+                    try:
+                        value = float(str_value)
+                    except ValueError:
+                        continue
+                else:
+                    try:
+                        value = int(str_value)
+                    except ValueError:
+                        continue
+                kwargs[key] = value
+            new_instance = HBNBCommand.classes[c_name]()
+
+            for key, value in kwargs.items():
+                setattr(new_instance, key, value)
+
+            new_instance.save()
+            print(new_instance.id)
+        except Exception:
+            pass
 
     def help_create(self):
         """ Help information for the create method """
@@ -178,11 +184,9 @@ class HBNBCommand(cmd.Cmd):
             print("** instance id missing **")
             return
 
-        instanceList = models.storage.all()
         key = c_name + "." + c_id
         try:
-            if key in instanceList:
-                print(str(instanceList[key]))
+            print(storage._FileStorage__objects[key])
         except KeyError:
             print("** no instance found **")
 
