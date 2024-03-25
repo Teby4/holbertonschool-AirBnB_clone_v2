@@ -14,7 +14,6 @@ from io import StringIO
 
 class TestHBNBCommand(unittest.TestCase):
 
-
     def setUp(self):
         self.hbnb = HBNBCommand()
 
