@@ -179,6 +179,7 @@ class HBNBCommand(cmd.Cmd):
             return
 
         key = c_name + "." + c_id
+        print("Generated key: ", key)
         try:
             print(storage._FileStorage__objects[key])
         except KeyError:
@@ -210,7 +211,7 @@ class HBNBCommand(cmd.Cmd):
             return
 
         key = c_name + "." + c_id
-
+        print("Generated key: ", key)
         try:
             del (storage.all()[key])
             storage.save()
