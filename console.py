@@ -115,24 +115,27 @@ class HBNBCommand(cmd.Cmd):
 
     def do_create(self, args):
         """ Function to allow for object creation with given parameters """
-
-        args = args.split(" ")
+        
+        args = args.split()
         if len(args) < 2:
             print("** class name missing **")
             return
 
-        classname = args[1]
-        if classname not in HBNBCommand.classes:
+        class_name = args[1]
+        if class_name not in HBNBCommand.classes:
             print("** class doesn't exist **")
             return
 
-        attributs = {}
-        for key_value in args[2:]:
-            k, v = key_value.split("=")
-            v = v.replace('_', ' ')
-            attributs[k] = v.strip('"\'')
+        attributes = {}
+        for arg in args[2:]:
+            parts = arg.split("=")
+            if len(parts) != 2:
+                continue
+            key, value = parts
+            value = value.strip('"\'').replace('_', ' ')
+            attributes[key] = value
 
-        new_instance = HBNBCommand.classes[classname](**attributs)
+        new_instance = HBNBCommand.classes[class_name](**attributes)
         new_instance.save()
         print(new_instance.id)
 
@@ -144,8 +147,8 @@ class HBNBCommand(cmd.Cmd):
     def do_show(self, args):
         """ Method to show an individual object """
         new = args.partition(" ")
-        c_name = new[1]
-        c_id = new[2]
+        c_name = new[0]
+        c_id = new[1]
 
         # guard against trailing args
         if c_id and ' ' in c_id:
