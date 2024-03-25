@@ -2,6 +2,7 @@
 """ Console Module """
 import cmd
 import sys
+import models
 from models.base_model import BaseModel
 from models.__init__ import storage
 from models.user import User
@@ -143,33 +144,23 @@ class HBNBCommand(cmd.Cmd):
         print("Creates a class of any type")
         print("[Usage]: create <className>\n")
 
-    def do_show(self, args):
-        """ Method to show an individual object """
-        new = args.partition(" ")
-        c_name = new[0]
-        c_id = new[1]
-
-        # guard against trailing args
-        if c_id and ' ' in c_id:
-            c_id = c_id.partition(' ')[0]
-
-        if not c_name:
+    def do_show(self, arg):
+        if arg == "":
             print("** class name missing **")
-            return
-
-        if c_name not in HBNBCommand.classes:
-            print("** class doesn't exist **")
-            return
-
-        if not c_id:
-            print("** instance id missing **")
-            return
-
-        key = "{}.{}".format(args[0], args[1])
-        try:
-            print(storage._FileStorage__objects[key])
-        except KeyError:
-            print("** no instance found **")
+        else:
+            args = arg.split()
+            cla = args[0]
+            if cla not in classes:
+                print("** class doesn't exist **")
+            elif len(args) != 2:
+                print("** instance id missing **")
+            else:
+                instanceList = models.storage.all()
+                key = "{}.{}".format(args[0], args[1])
+                if key in instanceList:
+                    print(str(instanceList[key]))
+                else:
+                    print("** no instance found **")
 
     def help_show(self):
         """ Help information for the show command """
