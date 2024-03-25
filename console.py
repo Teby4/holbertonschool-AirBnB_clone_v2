@@ -109,45 +109,30 @@ class HBNBCommand(cmd.Cmd):
         """ Prints the help documentation for EOF """
         print("Exits the program without formatting\n")
 
-    def emptyline(self) -> None:
+    def emptyline(self):
         """ Overrides the emptyline method of CMD """
         pass
 
     def do_create(self, args):
         """ Function to allow for object creation with given parameters """
-        args_list = args.split()
-        if not args:
+
+        args = args.split(" ")
+        if len(args) < 2:
             print("** class name missing **")
             return
-        class_name = args_list[0]
-        if class_name not in self.classes:
+
+        classname = args[1]
+        if classname not in HBNBCommand.classes:
             print("** class doesn't exist **")
             return
 
-        attributes = {}
+        attributs = {}
+        for key_value in args[2:]:
+            k, v = key_value.split("=")
+            v = v.replace('_', ' ')
+            attributs[k] = v.strip('"\'')
 
-        for param in args_list[1:]:
-            parts = param.split("=")
-            if len(parts) != 2:
-                continue
-            key, value = parts
-
-            if len(value) > 1 and value[0] == '"' and value[-1] == '"':
-                value = value[1:-1]
-                value = value.replace('\\"', '"')
-                value = value.replace('_', ' ')
-            else:
-                try:
-                    value = float(value)
-                except ValueError:
-                    try:
-                        value = int(value)
-                    except ValueError:
-                        continue
-
-            attributes[key] = value
-
-        new_instance = self.classes[class_name](**attributes)
+        new_instance = HBNBCommand.classes[classname](**attributs)
         new_instance.save()
         print(new_instance.id)
 
@@ -159,7 +144,7 @@ class HBNBCommand(cmd.Cmd):
     def do_show(self, args):
         """ Method to show an individual object """
         new = args.partition(" ")
-        c_name = new[0]
+        c_name = new[1]
         c_id = new[2]
 
         # guard against trailing args
@@ -178,8 +163,7 @@ class HBNBCommand(cmd.Cmd):
             print("** instance id missing **")
             return
 
-        key = c_name + "." + c_id
-        print("Generated key: ", key)
+        key = "{}.{}".format(args[0], args[1])
         try:
             print(storage._FileStorage__objects[key])
         except KeyError:
@@ -211,9 +195,9 @@ class HBNBCommand(cmd.Cmd):
             return
 
         key = c_name + "." + c_id
-        print("Generated key: ", key)
+
         try:
-            del (storage.all()[key])
+            del storage.all()[key]
             storage.save()
         except KeyError:
             print("** no instance found **")
