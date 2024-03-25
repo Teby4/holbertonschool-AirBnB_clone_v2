@@ -1,31 +1,29 @@
-#!/bin/usr/python3
-"""
-Unittest for Review class.
-"""
-import unittest
+#!/usr/bin/python3
+""" """
+from tests.test_models.test_base_model import test_basemodel
 from models.review import Review
-from models.base_model import BaseModel
 
-class TestReview(unittest.TestCase):
-    def test_review_instance(self):
-        review = Review()
-        self.assertIsInstance(review, Review)
-    
-    def test_review_inherits_base_model(self):
-        review = Review()
-        self.assertIsInstance(review, BaseModel)
-    
-    def test_review_has_place_id_user_id_and_text_attributes(self):
-        review = Review()
-        self.assertTrue(hasattr(review, 'place_id'))
-        self.assertTrue(hasattr(review, 'user_id'))
-        self.assertTrue(hasattr(review, 'text'))
-    
-    def test_review_attributes_defaults(self):
-        review = Review()
-        self.assertEqual(review.place_id, "")
-        self.assertEqual(review.user_id, "")
-        self.assertEqual(review.text, "")
 
-if __name__ == '__main__':
-    unittest.main()
+class test_review(test_basemodel):
+    """ """
+
+    def __init__(self, *args, **kwargs):
+        """ """
+        super().__init__(*args, **kwargs)
+        self.name = "Review"
+        self.value = Review
+
+    def test_place_id(self):
+        """ """
+        new = self.value()
+        self.assertEqual(type(new.place_id), str)
+
+    def test_user_id(self):
+        """ """
+        new = self.value()
+        self.assertEqual(type(new.user_id), str)
+
+    def test_text(self):
+        """ """
+        new = self.value()
+        self.assertEqual(type(new.text), str)
