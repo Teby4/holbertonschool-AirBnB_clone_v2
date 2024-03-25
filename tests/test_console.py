@@ -11,7 +11,9 @@ from console import HBNBCommand
 import sys
 from io import StringIO
 
+
 class TestHBNBCommand(unittest.TestCase):
+
 
     def setUp(self):
         self.hbnb = HBNBCommand()
@@ -53,6 +55,7 @@ class TestHBNBCommand(unittest.TestCase):
         self.hbnb.onecmd("show BaseModel " + id)
         output = sys.stdout.getvalue().strip()
         self.assertTrue("'first_name': 'Betty'" in output)
+
 
 if __name__ == "__main__":
     unittest.main()
