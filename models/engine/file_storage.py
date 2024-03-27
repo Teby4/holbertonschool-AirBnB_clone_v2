@@ -18,6 +18,13 @@ class FileStorage:
             return {k: v for k, v in self.__objects.items() if isinstance(v, cls)}
 
 
+    def cities(self):
+        if not hasattr(self, 'id'):
+            return []
+        
+        state_id = self.id
+        return [city for city in self.__objects.values() if city.state_id == state_id]
+
     def new(self, obj):
         """Adds new object to storage dictionary"""
         self.all().update({obj.to_dict()['__class__'] + '.' + obj.id: obj})
@@ -30,6 +37,7 @@ class FileStorage:
             for key, val in temp.items():
                 temp[key] = val.to_dict()
             json.dump(temp, f)
+
 
     def reload(self):
         """Loads storage dictionary from file"""
