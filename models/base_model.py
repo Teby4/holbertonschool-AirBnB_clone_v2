@@ -10,13 +10,16 @@ Base = declarative_base()
 
 class BaseModel:
     """A base class for all hbnb models"""
+    id = Column(String(128), primary_key=True, nullable=False)
+    created_at = Column(DateTime, nullable=False, default=datetime.utcnow())
+    updated_at = Column(DateTime, nullable=False, default=datetime.utcnow())
+
     def __init__(self, *args, **kwargs):
         """Instatntiates a new model"""
         if not kwargs:
-            from models import storage
-            self.id = Column(String(128), primary_key=True, nullable=False)
-            self.created_at = Column(DateTime, nullable=False, default=datetime.utcnow())
-            self.updated_at = Column(DateTime, nullable=False, default=datetime.utcnow())
+            self.id = str(uuid.uuid4())
+            self.created_at = datetime.utcnow()
+            self.updated_at = datetime.utcnow()
         else:
             if 'created_at' in kwargs:
                 kwargs['updated_at'] = datetime.strptime(kwargs['updated_at'],
