@@ -14,6 +14,6 @@ class State(BaseModel, Base):
 
     @property
     def cities(self):
-        from models.file_storage import FileStorage
-        fs = FileStorage()
-        return fs.get_cities_by_state
+        from models import storage
+        city_instances = storage.all("City").values()
+        return [city for city in city_instances if city.state_id == self.id]
