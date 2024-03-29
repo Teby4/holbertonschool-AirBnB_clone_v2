@@ -4,7 +4,6 @@ from sqlalchemy import Column, String
 from models.base_model import BaseModel, Base
 from sqlalchemy.orm import relationship, backref
 from os import getenv
-import models
 
 
 
@@ -21,8 +20,9 @@ class State(BaseModel, Base):
             @property
             def cities(self):
                 from models.city import City
-                list_cities = []
-                for city in models.storage.all(City).values():
-                    if city.state_id == self.id:
-                        list_cities.append(city)
+                from models import storage
+                list_cities = [] 
+                for i in storage.all():
+                    if i.state_id == self.id:
+                        list_cities.append(i)
                 return list_cities
