@@ -2,7 +2,6 @@
 """ Console Module """
 import cmd
 import sys
-import models
 from models.base_model import BaseModel
 from models.__init__ import storage
 from models.user import User
@@ -98,7 +97,7 @@ class HBNBCommand(cmd.Cmd):
         exit()
 
     def help_quit(self):
-        """ Prints the help documentation for quit  """
+        """ Prints the help documentation for quit """
         print("Exits the program with formatting\n")
 
     def do_EOF(self, arg):
@@ -114,48 +113,31 @@ class HBNBCommand(cmd.Cmd):
         """ Overrides the emptyline method of CMD """
         pass
 
-    def do_create(self, args):
-        """ Function to allow for object creation with given parameters """
-        args = args.split()
-        if args[0]:
-            c_name = args[0]
-        else:
+    def do_create(self, arg):
+        """ Create an object of any class with given parameters """
+        arg_list = arg.split(" ")
+        class_name = arg_list[0]
+        if not class_name:
             print("** class name missing **")
             return
-        if c_name not in HBNBCommand.classes:
+        elif class_name not in HBNBCommand.classes:
             print("** class doesn't exist **")
             return
-        kwargs = {}
-        try:
-            for param in args[1:]:
-                param_split = param.split('=')
-                if len(param_split) != 2:
-                    continue
-                key, str_value = param_split
 
-                if str_value[0] == '"' and str_value[-1] == '"':
-                    str_value = str_value[1:-1]
-                    value = str_value.replace('_', ' ')
-                elif '.' in str_value:
-                    try:
-                        value = float(str_value)
-                    except ValueError:
-                        continue
-                else:
-                    try:
-                        value = int(str_value)
-                    except ValueError:
-                        continue
-                kwargs[key] = value
-            new_instance = HBNBCommand.classes[c_name]()
+        attributes = {}
+        for key_value in arg_list[1:]:
+            print(key_value)
+            key, value = key_value.split("=")
+            value = value.replace('_', ' ')
+            attributes[key] = value.strip('"\'')
 
-            for key, value in kwargs.items():
-                setattr(new_instance, key, value)
+        new_instance = HBNBCommand.classes[class_name]()
+        for key, value in attributes.items():
+            new_instance.__dict__[key] = value
 
-            new_instance.save()
-            print(new_instance.id)
-        except Exception:
-            pass
+        print(new_instance.id)
+        storage.new(new_instance)
+        storage.save()
 
     def help_create(self):
         """ Help information for the create method """
@@ -228,23 +210,24 @@ class HBNBCommand(cmd.Cmd):
         print("Destroys an individual instance of a class")
         print("[Usage]: destroy <className> <objectId>\n")
 
-    def do_all(self, args):
-        """ Shows all objects, or all objects of a class"""
-        print_list = []
+    def do_all(self, arg):
+        args = arg.split()
+        obj_list = []
 
-        if args:
-            args = args.split(' ')[0]  # remove possible trailing args
-            if args not in HBNBCommand.classes:
-                print("** class doesn't exist **")
-                return
-            for k, v in storage._FileStorage__objects.items():
-                if k.split('.')[0] == args:
-                    print_list.append(str(v))
+        if len(args) == 0:
+            obj_dict = storage.all()
+        elif args[0] in self.classes:
+            obj_dict = storage.all(self.classes[args[0]])
         else:
-            for k, v in storage._FileStorage__objects.items():
-                print_list.append(str(v))
+            print("** class doesn't exist **")
+            return False
 
-        print(print_list)
+        for key in obj_dict:
+            obj_list.append(str(obj_dict[key]))
+
+        print("[", end="")
+        print(", ".join(obj_list), end="")
+        print("]")
 
     def help_all(self):
         """ Help information for the all command """
