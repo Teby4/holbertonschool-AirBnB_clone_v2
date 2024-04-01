@@ -28,35 +28,35 @@ class Place(BaseModel, Base):
     longitude = Column(Float, nullable=True)
     amenity_ids = []
 
-    amenities = relationship("Amenity", secondary="place_amenity", viewonly=False)
     reviews = relationship("Review", backref="place", cascade="delete")
+    amenities = relationship("Amenity", secondary="place_amenity", viewonly=False)
 
     if getenv('HBNB_TYPE_STORAGE') != 'db':
-        class Place(BaseModel):
-            @property
-            def reviews(self):
-                from models.review import Review
-                from models import storage
-                reviews_list = [] 
-                for i in storage.all():
-                    if i.place_id == self.id:
-                        reviews_list.append(i)
-                return reviews_list
+        @property
+        def reviews(self):
+            from models.review import Review
+            from models import storage
+            reviews_list = []
+            for i in storage.all():
+                if i.place_id == self.id:
+                    reviews_list.append(i)
+            return reviews_list
 
-            @property
-            def amenities(self):
-                from models.amenity import Amenity
-                from models import storage
-                ammenity_list = [] 
-                for i in Amenity.all():
-                    if amenity.id in self.ids_amenity:
-                        ammenity_list.append(i)
-                return ammenity_list
+        @property
+        def amenities(self):
+            from models.amenity import Amenity
+            from models import storage
+            amenity_list = []
+            for amenity_id in self.amenity_ids:
+                amenity = storage.new(Amenity, amenity_id)
+                if amenity:
+                    amenity_list.append(amenity)
+            return amenity_list
 
-            @amenities.setter
-            def amenitie(self, value):
-                """Setter for amenities"""
-                if isinstance(value, Amenity):
-                    self.amenity_ids.append(value.id)
+        @amenities.setter
+        def amenities(self, value):
+            """Setter for amenities"""
+            if isinstance(value, Amenity):
+                self.amenity_ids.append(value.id)
 
             
