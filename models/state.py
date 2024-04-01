@@ -6,22 +6,22 @@ from sqlalchemy.orm import relationship, backref
 from os import getenv
 
 
+
 class State(BaseModel, Base):
     """ State class """
     __tablename__ = 'states'
-
+  
     if getenv('HBNB_TYPE_STORAGE') == 'db':
         name = Column(String(128), nullable=False)
-        cities = relationship("City", backref="state",
-                              cascade="all, delete-orphan")
+        cities = relationship("City", backref="state", cascade="all, delete-orphan")
     else:
         class State(BaseModel):
-
+            name = ""
             @property
             def cities(self):
                 from models.city import City
                 from models import storage
-                list_cities = []
+                list_cities = [] 
                 for i in storage.all():
                     if i.state_id == self.id:
                         list_cities.append(i)

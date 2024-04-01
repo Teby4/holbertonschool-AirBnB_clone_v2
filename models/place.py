@@ -1,17 +1,10 @@
 #!/usr/bin/python3
 """ Place Module for HBNB project """
 from models.base_model import BaseModel, Base
-from sqlalchemy import Column, String, Integer, Float, ForeignKey, Table
-from sqlalchemy.orm import relationship
-from models.amenity import Amenity
+from sqlalchemy import Column, String, Integer, Float, ForeignKey
 from os import getenv
+from sqlalchemy.orm import relationship, backref
 
-place_amenity = Table(
-    'place_amenity',
-    Base,
-    Column('place_id', String(60), ForeignKey('places.id'), primary_key=True, nullable=False),
-    Column('amenity_id', String(60), ForeignKey('amenities.id'), primary_key=True, nullable=False)
-)
 class Place(BaseModel, Base):
     """ A place to stay """
     __tablename__ = 'places'
@@ -27,12 +20,12 @@ class Place(BaseModel, Base):
     latitude = Column(Float, nullable=True)
     longitude = Column(Float, nullable=True)
     amenity_ids = []
-
-    reviews = relationship(argument="Review", backref="place", cascade="delete")
-    amenities = relationship(argument="Amenity", secondary=place_amenity, viewonly=False)
+    
+    reviews = relationship("Review", backref="place", cascade="delete")
 
     if getenv('HBNB_TYPE_STORAGE') != 'db':
-
+        class Place(BaseModel):
+            name = ""
             @property
             def reviews(self):
                 from models.review import Review
@@ -42,19 +35,3 @@ class Place(BaseModel, Base):
                     if i.place_id == self.id:
                         reviews_list.append(i)
                 return reviews_list
-
-            @property
-            def amenities(self):
-                new_dict = []
-                for amenity in Amenity.all():
-                    if amenity.id in self.amenity_ids:
-                        new_dict.append(amenity)
-                return new_dict
-        
-            @amenities.setter
-            def amenities(self, value):
-                """Setter for amenities"""
-                if isinstance(value, Amenity):
-                    self.amenity_ids.append(value.id)
-
-            
