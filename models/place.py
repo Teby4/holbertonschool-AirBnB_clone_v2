@@ -2,9 +2,9 @@
 """ Place Module for HBNB project """
 from models.base_model import BaseModel, Base
 from sqlalchemy import Column, String, Integer, Float, ForeignKey, Table
-from os import getenv
-from sqlalchemy.orm import relationship, backref
+from sqlalchemy.orm import relationship
 from models.amenity import Amenity
+from os import getenv
 
 place_amenity = Table(
     'place_amenity',
@@ -29,34 +29,32 @@ class Place(BaseModel, Base):
     amenity_ids = []
 
     reviews = relationship("Review", backref="place", cascade="delete")
-    amenities = relationship("Amenity", secondary="place_amenity", viewonly=False)
+    amenities = relationship("Amenity", secondary="place_amenity", viewonly=False, overlaps="place_amenities")
 
     if getenv('HBNB_TYPE_STORAGE') != 'db':
-        @property
-        def reviews(self):
-            from models.review import Review
-            from models import storage
-            reviews_list = []
-            for i in storage.all():
-                if i.place_id == self.id:
-                    reviews_list.append(i)
-            return reviews_list
 
-        @property
-        def amenities(self):
-            from models.amenity import Amenity
-            from models import storage
-            amenity_list = []
-            for amenity_id in self.amenity_ids:
-                amenity = storage.new(Amenity, amenity_id)
-                if amenity:
-                    amenity_list.append(amenity)
-            return amenity_list
+            @property
+            def reviews(self):
+                from models.review import Review
+                from models import storage
+                reviews_list = [] 
+                for i in storage.all():
+                    if i.place_id == self.id:
+                        reviews_list.append(i)
+                return reviews_list
 
-        @amenities.setter
-        def amenities(self, value):
-            """Setter for amenities"""
-            if isinstance(value, Amenity):
-                self.amenity_ids.append(value.id)
+            @property
+            def amenities(self):
+                new_dict = []
+                for amenity in Amenity.all():
+                    if amenity.id in self.amenity_ids:
+                        new_dict.append(amenity)
+                return new_dict
+        
+            @amenities.setter
+            def amenities(self, value):
+                """Setter for amenities"""
+                if isinstance(value, Amenity):
+                    self.amenity_ids.append(value.id)
 
             
