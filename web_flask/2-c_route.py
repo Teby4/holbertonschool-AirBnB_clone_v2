@@ -1,22 +1,18 @@
 #!/usr/bin/python3
-
-
+"""task 2"""
 from flask import Flask
 
+app = Flask(import_name=__name__)
 
-app = Flask(__name__)
-app.url_map.strict_slashes = False
-
-
-@app.route('/')
-def hello_hbnb():
+@app.route(rule='/', strict_slashes=False)
+def hellohbnb():
     return "Hello HBNB!"
 
-@app.route('/hbnb')
+@app.route(rule='/hbnb', strict_slashes=False)
 def hbnb():
     return "HBNB"
 
-@app.route('/c/<text>')
+@app.route(rule='/c/<text>', strict_slashes=False)
 def ctext(c_text):
     text = c_text.replace('_',' ')
     return 'C {}'.format(text)

@@ -1,17 +1,14 @@
 #!/usr/bin/python3
-
-
+"""task 1"""
 from flask import Flask
 
+app = Flask(import_name=__name__)
 
-app = Flask(__name__)
-app.url_map.strict_slashes = False
-
-@app.route('/')
-def hello_hbnb():
+@app.route(rule='/', strict_slashes=False)
+def hellohbnb():
     return "Hello HBNB!"
 
-@app.route('/hbnb')
+@app.route(rule='/hbnb', strict_slashes=False)
 def hbnb():
     return "HBNB"
 
