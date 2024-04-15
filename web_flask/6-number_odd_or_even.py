@@ -38,13 +38,16 @@ def number(n) -> str:
 def ntemplate(n) -> str:
     return render_template('5-number.html', n=n)
 
+
 @app.route(rule='/number_odd_or_even/<int:n>', strict_slashes=False)
 def odoreven(n) -> str:
     if n % 2 == 0:
         oddoreven = "even"
     else:
         oddoreven = "odd"
-    return render_template('6-number_odd_or_even.html', n=n, oddoreven=oddoreven)
+    return render_template('6-number_odd_or_even.html', n=n,
+                           oddoreven=oddoreven)
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
