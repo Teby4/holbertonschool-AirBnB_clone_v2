@@ -35,8 +35,8 @@ def number(n) -> str:
 
 
 @app.route(rule='/number_template/<int:n>', strict_slashes=False)
-def ntemplate(n):
-    return render_template(template_name_or_list='5-number.html', n=n)
+def ntemplate(n) -> str:
+    return render_template('5-number.html', n=n)
 
 
 if __name__ == '__main__':
