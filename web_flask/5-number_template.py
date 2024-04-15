@@ -1,43 +1,35 @@
 #!/usr/bin/python3
 """task 2"""
-from typing import Literal
 from flask import Flask, render_template
 
-app = Flask(import_name=__name__)
+app = Flask(__name__)
 
-
-@app.route(rule='/', strict_slashes=False)
-def hellohbnb() -> Literal['Hello HBNB!']:
+@app.route('/', strict_slashes=False)
+def hello_hbnb():
     return "Hello HBNB!"
 
-
-@app.route(rule='/hbnb', strict_slashes=False)
-def hbnb() -> Literal['HBNB']:
+@app.route('/hbnb', strict_slashes=False)
+def hbnb():
     return "HBNB"
 
-
-@app.route(rule='/c/<text>', strict_slashes=False)
-def ctext(text) -> str:
+@app.route('/c/<string:text>', strict_slashes=False)
+def c_text(text):
     text = text.replace('_', ' ')
-    return "C {}".format(text)
+    return f"C {text}"
 
-
-@app.route('/python/', defaults={'text': 'is cool'})
-@app.route('/python/<text>', strict_slashes=False)
-def pytext(text) -> str:
+@app.route('/python/', defaults={'text': 'is cool'}, strict_slashes=False)
+@app.route('/python/<string:text>', strict_slashes=False)
+def python_text(text):
     text = text.replace('_', ' ')
-    return "Python {}".format(text)
+    return f"Python {text}"
 
+@app.route('/number/<int:n>', strict_slashes=False)
+def number(n):
+    return f"{n} is a number"
 
-@app.route(rule='/number/<int:n>', strict_slashes=False)
-def number(n) -> str:
-    return "{} is a number".format(n)
-
-
-@app.route(rule='/number_template/<int:n>', strict_slashes=False)
-def ntemplate(n) -> str:
+@app.route('/number_template/<int:n>', strict_slashes=False)
+def number_template(n):
     return render_template('5-number.html', n=n)
-
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
